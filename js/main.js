@@ -24,8 +24,6 @@ $(document).ready(function(){
 			Hackton.zipcodeBox
 			Hackton.initMap();
 			Hackton.getLocationByAPI(Hackton.resetMapCenterPosition);
-			
-
 
 			Hackton.zipBox.children('a').click(function(){
 				Hackton.zip = Hackton.zipcode.val();
@@ -84,7 +82,6 @@ $(document).ready(function(){
                 var region = marker['venue'].region;
                 var postal_code = marker['venue'].postal_code;
                 var name = marker['venue'].name;
-
                 var title = marker['title'];
                 var category = marker['category'];
                 var start_date = marker['start_date'];
@@ -95,14 +92,13 @@ $(document).ready(function(){
                 	content: '<p class="date">' + start_date + '</p>'	
                 			+ '<h2 class="event-title">' + title + '</h2>' 
                 			+	'<p><b>Category: </b>' + category + '</p>'
-                			+	'<div class="address">'
+                			+	'<div class="address-box">'
                 			+	'<div class="name">' + name + "</div>"
                 			+	'<div class="address">' + address + '</div>'
                 			+	'<div><span class="city">' + city + ', </span>'
                 			+	'<span class="region">' + region + '</span></div>'
                 			+	'<div><span class="postal_code>' + postal_code + '</span></div>'
                 			+	'</div>'
-                			+	'<div><a href="http://' + url + '">See the event</a></div>'
                 });
 
                 Hackton.markers.push(marker);
@@ -210,7 +206,7 @@ $(document).ready(function(){
 		{
 
 			Eventbrite({'app_key': Hackton.eventBriteKey, 'user_key': Hackton.eventBriteUser}, function(eb_client){
-				var params = {'latitude': Hackton.latitude, 'longitude': Hackton.longitude, 'category': category, 'within':'100', 'country': Hackton.country, 'within_unit':'K','date': 'Today', 'max': '10'};
+				var params = {'latitude': Hackton.latitude, 'longitude': Hackton.longitude, 'category': category, 'within':'100', 'country': Hackton.country, 'within_unit':'K','date': 'Today', 'max': '50'};
 
 				eb_client.event_search( params, function( response ){
 					console.log(response);
@@ -222,7 +218,7 @@ $(document).ready(function(){
 	    					marker["start_date"] = val.event.start_date;
 	    					marker["end_date"] = val.event.end_date;
 	    					marker["title"] = val.event.title;
-	    					marker["url"] = val.event.url;
+	    					marker["url"] = encodeURIComponent(val.event.url);
 	    					marker["venue"] = val.event.venue;
 
 	    					Hackton.setPoint(marker);
