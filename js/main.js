@@ -17,6 +17,8 @@ LoveMusic = {
         LoveMusic.initMap();
 		LoveMusic.getLocation(LoveMusic.resetMapCenterPosition);
 		LoveMusic.initEventbrite();
+        LoveMusic.setPoint(LoveMusic.latitude, LoveMusic.longitude, "LOAL");
+        LoveMusic.setPoint(LoveMusic.latitude+1, LoveMusic.longitude-3, "Titolooooo");
 	},
 
     resetMapCenterPosition: function ()
@@ -35,9 +37,10 @@ LoveMusic = {
         LoveMusic.map = new google.maps.Map(LoveMusic.mapBox, mapOptions);
 	},
 
-	setPoint: function()
+	setPoint: function(lat, lon, title)
 	{
-
+        var myLatlng = new google.maps.LatLng(lat, lon);
+        var marker = new google.maps.Marker({title: title, position: myLatlng, map: LoveMusic.map});
 	},
 
 	/* 
