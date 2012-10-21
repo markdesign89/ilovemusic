@@ -10,6 +10,7 @@ $(document).ready(function(){
 		zip: 0,
 	    map: null,
 	    mapBox: document.getElementById("map"),
+        markers: [],
 
 
 		init: function()
@@ -17,19 +18,21 @@ $(document).ready(function(){
             LoveMusic.zipcodeBox
 			LoveMusic.initMap();
 			LoveMusic.getLocationByAPI(LoveMusic.resetMapCenterPosition);
-			LoveMusic.initEventbrite();
+			
 
 			LoveMusic.zipBox.children('a').click(function(){
 				LoveMusic.zip = LoveMusic.zipcode.val();
 				LoveMusic.zipBox.hide();
+                LoveMusic.getLocationByZip(LoveMusic.resetMapCenterPosition);
 			});
 
-            LoveMusic.setPoint(LoveMusic.latitude+1, LoveMusic.longitude-3, "Titolooooo");
+            //LoveMusic.setPoint(LoveMusic.latitude+1, LoveMusic.longitude-3, "Titolooooo");
 		},
 
 	    resetMapCenterPosition: function ()
 	    {
 	        LoveMusic.map.setCenter(new google.maps.LatLng(LoveMusic.latitude, LoveMusic.longitude));
+            LoveMusic.initEventbrite(LoveMusic.setMarkers);
 	    },
 
 		initMap: function()
@@ -44,8 +47,12 @@ $(document).ready(function(){
 	        LoveMusic.map = new google.maps.Map(LoveMusic.mapBox, mapOptions);
 		},	
 
-        setPoint: function(lat, lon, title)
+        setPoint: function(marker)
         {
+            console.log(marker);
+            var lat = marker['venue'].latitude;
+            var lon = marker['venue'].longitude;
+            var title = marker['title'];
             var myLatlng = new google.maps.LatLng(lat, lon);
             var marker = new google.maps.Marker({title: title, position: myLatlng, map: LoveMusic.map});
         },
@@ -53,10 +60,10 @@ $(document).ready(function(){
 		/* 
 		 * 	getLocationByZip(): try to localize the user with a zip code
 		 */
-        getLocationByZip: function(zipCode, located){
+        getLocationByZip: function(located){
             var geocoder = new google.maps.Geocoder();
             geocoder.geocode(
-                {address: zipCode},
+                {address: LoveMusic.zip},
                 function(results, status)
                 {
                     if (status == google.maps.GeocoderStatus.OK)
@@ -92,13 +99,13 @@ $(document).ready(function(){
                         LoveMusic.latitude = position.coords.latitude;
                         LoveMusic.longitude = position.coords.longitude;
                         located();
-                    });
+                    },
+                    function(errorCode)
+                    {
+                        LoveMusic.zipBox.show();
+                    }
+                );
 
-				if(LoveMusic.latitude == 0 || LoveMusic.longitude == 0)
-				{
-					//LoveMusic.zipBox.show();
-					return false;
-				}
 			}
 			else
 			{
@@ -109,7 +116,7 @@ $(document).ready(function(){
 			return true;
 		},
 
-		initEventbrite: function()
+		initEventbrite: function(callback)
 		{
 			var markers = [];
 
@@ -132,10 +139,19 @@ $(document).ready(function(){
 	    					markers.push(marker);
 	    				}
 	    			});
-	    			LoveMusic.setMarkers(markers);
+	    			//LoveMusic.setMarkers(markers);
+                    LoveMusic.markers = markers;
+                    callback();
 				});
 			});
 		},
+        setMarkers: function()
+        {
+            for (var i = 0; i<LoveMusic.markers.length; i++)
+            {
+                LoveMusic.setPoint(LoveMusic.markers[i]);
+            }
+        },
 
 		getDate: function()
 		{
@@ -156,7 +172,7 @@ $(document).ready(function(){
 
 			console.log(today);
 			return today;
-		},
+		}
 
 	}
 
