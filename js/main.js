@@ -14,9 +14,15 @@ LoveMusic = {
 
 	init: function()
 	{
-		LoveMusic.getLocation(LoveMusic.initMap);
+        LoveMusic.initMap();
+		LoveMusic.getLocation(LoveMusic.resetMapCenterPosition);
 		LoveMusic.initEventbrite();
 	},
+
+    resetMapCenterPosition: function ()
+    {
+        LoveMusic.map.setCenter(new google.maps.LatLng(LoveMusic.latitude, LoveMusic.longitude));
+    },
 
 	initMap: function()
 	{
