@@ -88,7 +88,7 @@ $(document).ready(function(){
                 var url = marker['url'];
                 var myLatlng = new google.maps.LatLng(lat, lon);
                 var marker = new google.maps.Marker({title: title, position: myLatlng, clickable: true, animation: google.maps.Animation.DROP});
-                marker.info = new google.maps.InfoWindow({
+                info = new google.maps.InfoWindow({
                 	content: '<p class="date">' + start_date + '</p>'	
                 			+ '<h2 class="event-title">' + title + '</h2>' 
                 			+	'<p><b>Category: </b>' + category + '</p>'
@@ -103,8 +103,19 @@ $(document).ready(function(){
 
                 Hackton.markers.push(marker);
 
+                marker.info = info;
+                google.maps.event.addListener(info, 'closeclick', function() {
+                    marker.info.close();
+                    Hackton.openMarker = null;
+				});
+
                 google.maps.event.addListener(marker, 'click', function() {
   					marker.info.open(Hackton.map, marker);
+                    if (Hackton.openMarker != null)
+                    {
+                        Hackton.openMarker.info.close();
+                    }
+                    Hackton.openMarker = marker;
 				});
 
             }catch(ex){
