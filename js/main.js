@@ -1,50 +1,75 @@
 $(document).ready(function(){
 
-	LoveMusic = {
+	Hackton = {
+		categories: ['conference', 'conventions', 'entertainment', 'fundraisers', 'meetings', 'other', 'performances', 'reunions', 'sales', 'seminars', 'social', 'sports', 'tradeshows', 'travel', 'religion', 'fairs', 'food', 'music', 'recreation'],
+		categorySelection: $('#category'),
 		eventBriteKey: 'OF6TMFZJBW6POGG37K',
 		eventBriteUser: '',
 		latitude: 0,
 		longitude: 0,
+		map: null,
+	    mapBox: document.getElementById("map"),
+        markers: [],
 		zipBox: $('#zipbox'),
 		zipcode: $('#zipcode'),
 		zip: 0,
-	    map: null,
-	    mapBox: document.getElementById("map"),
-        markers: [],
+	    
 
 
 		init: function()
 		{
-            LoveMusic.zipcodeBox
-			LoveMusic.initMap();
-			LoveMusic.getLocationByAPI(LoveMusic.resetMapCenterPosition);
+			Hackton.initLayout();
+
+			Hackton.zipcodeBox
+			Hackton.initMap();
+			Hackton.getLocationByAPI(Hackton.resetMapCenterPosition);
 			
 
-			LoveMusic.zipBox.children('a').click(function(){
-				LoveMusic.zip = LoveMusic.zipcode.val();
-				LoveMusic.zipBox.hide();
-                LoveMusic.getLocationByZip(LoveMusic.resetMapCenterPosition);
+
+			Hackton.zipBox.children('a').click(function(){
+				Hackton.zip = Hackton.zipcode.val();
+				Hackton.zipBox.hide();
+                Hackton.getLocationByZip(Hackton.resetMapCenterPosition);
 			});
 
-            //LoveMusic.setPoint(LoveMusic.latitude+1, LoveMusic.longitude-3, "Titolooooo");
+			Hackton.categorySelection.change(function(){
+				var category = $(this).val();
+				Hackton.clearMarkers();
+				Hackton.initEventbrite(category);
+			});
+
+		},
+
+		initLayout: function()
+		{
+			var select = '';
+			for(var i = 0; i < Hackton.categories.length; i++){
+				select += '<option value="' + Hackton.categories[i] + '">' + Hackton.categories[i] + '</option>';
+			}
+
+			Hackton.categorySelection.append(select);
 		},
 
 	    resetMapCenterPosition: function ()
 	    {
-	        LoveMusic.map.setCenter(new google.maps.LatLng(LoveMusic.latitude, LoveMusic.longitude));
-            LoveMusic.initEventbrite(LoveMusic.setMarkers);
+	        Hackton.map.setCenter(new google.maps.LatLng(Hackton.latitude, Hackton.longitude));
+            Hackton.initEventbrite();
 	    },
 
 		initMap: function()
 		{
+			var latLon = new google.maps.LatLng(Hackton.latitude, Hackton.longitude);
+
+			var geocoder = new google.maps.Geocoder();
+
 			var mapOptions = {
-	        	zoom: 8,
-	        	center: new google.maps.LatLng(LoveMusic.latitude, LoveMusic.longitude),
+	        	zoom: 10,
+	        	center: new google.maps.LatLng(Hackton.latitude, Hackton.longitude),
 	        	mapTypeId: google.maps.MapTypeId.ROADMAP
 	    	};
 
 
-	        LoveMusic.map = new google.maps.Map(LoveMusic.mapBox, mapOptions);
+	        Hackton.map = new google.maps.Map(Hackton.mapBox, mapOptions);
 		},	
 
         setPoint: function(marker)
@@ -53,10 +78,53 @@ $(document).ready(function(){
                 var lat = marker['venue'].latitude;
                 var lon = marker['venue'].longitude;
                 var title = marker['title'];
+                var category = marker['category'];
+                var start_date = marker['start_date'];
+                var url = marker['url'];
                 var myLatlng = new google.maps.LatLng(lat, lon);
-                var marker = new google.maps.Marker({title: title, position: myLatlng, map: LoveMusic.map});
+                var marker = new google.maps.Marker({title: title, position: myLatlng, clickable: true, animation: google.maps.Animation.DROP});
+                marker.info = new google.maps.InfoWindow({
+                	content: 	'<h2>' + title + '</h2>' 
+                			+	'<p>' + start_date + '</p>'
+                			+	'<p>' + category + '</p>'
+                			+	'<a href="' + url + '">See the event</a>'
+                			+	''
+                });
+
+                Hackton.markers.push(marker);
+
+                google.maps.event.addListener(marker, 'click', function() {
+  					marker.info.open(Hackton.map, marker);
+				});
+
             }catch(ex){
                 console.log(ex);
+            }
+        },
+
+        clearMarkers: function()
+        {
+        	for (var i = 0; i < Hackton.markers.length; i++ ) {
+        		if(Hackton.markers[i]){
+        			Hackton.markers[i].setMap(null);
+        		}
+    		}
+    		Hackton.markers = [];
+        },
+
+        showMarkers: function()
+        {
+        	for (var i = 0; i < Hackton.markers.length; i++ ) {
+        		if(Hackton.markers[i]){
+        			setTimeout(Hackton.dropMarker(i), i * 100);
+        		}
+    		}
+        },
+
+        dropMarker: function(i)
+        {
+        	return function() {
+              Hackton.markers[i].setMap(Hackton.map);
             }
         },
         
@@ -66,13 +134,13 @@ $(document).ready(function(){
         getLocationByZip: function(located){
             var geocoder = new google.maps.Geocoder();
             geocoder.geocode(
-                {address: LoveMusic.zip},
+                {address: Hackton.zip},
                 function(results, status)
                 {
                     if (status == google.maps.GeocoderStatus.OK)
                     {
-                        LoveMusic.latitude = results[0].geometry.location.lat();
-                        LoveMusic.longitude = results[0].geometry.location.lng();
+                        Hackton.latitude = results[0].geometry.location.lat();
+                        Hackton.longitude = results[0].geometry.location.lng();
                         located();
                     }
                     else
@@ -99,32 +167,31 @@ $(document).ready(function(){
 				navigator.geolocation.getCurrentPosition(
                     function(position)
                     {
-                        LoveMusic.latitude = position.coords.latitude;
-                        LoveMusic.longitude = position.coords.longitude;
+                        Hackton.latitude = position.coords.latitude;
+                        Hackton.longitude = position.coords.longitude;
                         located();
                     },
                     function(errorCode)
                     {
-                        LoveMusic.zipBox.show();
+                        Hackton.zipBox.show();
                     }
                 );
 
 			}
 			else
 			{
-				LoveMusic.zipBox.show();
+				Hackton.zipBox.show();
 				return false;
 			}
 
 			return true;
 		},
 
-		initEventbrite: function(callback)
+		initEventbrite: function(category, distance, date)
 		{
-			var markers = [];
 
-			Eventbrite({'app_key': LoveMusic.eventBriteKey, 'user_key': LoveMusic.eventBriteUser}, function(eb_client){
-				var params = {'latitude': LoveMusic.latitude, 'longitude': LoveMusic.longitude, 'date': 'Today', 'max': '100'};
+			Eventbrite({'app_key': Hackton.eventBriteKey, 'user_key': Hackton.eventBriteUser}, function(eb_client){
+				var params = {'latitude': Hackton.latitude, 'longitude': Hackton.longitude, 'category': category, 'within':'100', 'within_unit':'K','date': 'Today', 'max': '60'};
 
 				eb_client.event_search( params, function( response ){
 					console.log(response);
@@ -139,46 +206,16 @@ $(document).ready(function(){
 	    					marker["url"] = val.event.url;
 	    					marker["venue"] = val.event.venue;
 
-	    					markers.push(marker);
+	    					Hackton.setPoint(marker);
 	    				}
 	    			});
-	    			//LoveMusic.setMarkers(markers);
-                    LoveMusic.markers = markers;
-                    callback();
+	    			Hackton.showMarkers();
 				});
 			});
 		},
-        setMarkers: function()
-        {
-            for (var i = 0; i<LoveMusic.markers.length; i++)
-            {
-                LoveMusic.setPoint(LoveMusic.markers[i]);
-            }
-        },
-
-		getDate: function()
-		{
-			var today = new Date();
-			var dd = today.getDate();
-			var mm = today.getMonth();
-			var yyyy = today.getFullYear();
-
-			if(dd < 10){
-				dd = '0' + dd;
-			} 
-
-			if(mm < 10){
-				mm = '0' + mm;
-			} 
-
-			today = yyyy + '-' + mm + '-' + dd;
-
-			console.log(today);
-			return today;
-		}
 
 	}
 
-	LoveMusic.init();
+	Hackton.init();
 
 });

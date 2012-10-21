@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title>I love music</title>
+        <title>What can I do today?</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width">
 
@@ -17,10 +17,19 @@
     </head>
     <body>
 
-        <div id="zipbox">
+        <div id="zipbox" class="box">
             <h2>Please, insert your zip code:</h2>
             <input type="text" name="zipcode" id="zipcode" />
             <a href="javascript:;" class="button button-submit">Ok</a>
+        </div>
+
+        <div id="optionBox" class="box">
+            <fieldset>
+                <h2>Select a category</h2>
+                <select id="category">
+                    <option value="">-</option>
+                </select>
+            </fieldset>
         </div>
 
         <div id="target">

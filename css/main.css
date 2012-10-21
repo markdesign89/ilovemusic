@@ -69,13 +69,20 @@ a{ text-decoration: none; }
 
 /* Zip Code */
 
-#zipbox{
+.box{
     background: #F1F1F1;
     border: 1px solid #E5E5E5;
+    padding: 20px 25px 15px;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 400;
+}
+
+#zipbox{
     display: none;
     height: 60px;
     margin: -60px -150px;
-    padding: 20px 25px 15px;
     position: fixed;
     top: 50%;
     right: 50%;
