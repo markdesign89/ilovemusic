@@ -14,8 +14,9 @@ $(document).ready(function(){
 
 		init: function()
 		{
+            LoveMusic.zipcodeBox
 			LoveMusic.initMap();
-			LoveMusic.getLocation(LoveMusic.resetMapCenterPosition);
+			LoveMusic.getLocationByAPI(LoveMusic.resetMapCenterPosition);
 			LoveMusic.initEventbrite();
 
 			LoveMusic.zipBox.children('a').click(function(){
@@ -23,7 +24,6 @@ $(document).ready(function(){
 				LoveMusic.zipBox.hide();
 			});
 
-            LoveMusic.setPoint(LoveMusic.latitude, LoveMusic.longitude, "LOAL");
             LoveMusic.setPoint(LoveMusic.latitude+1, LoveMusic.longitude-3, "Titolooooo");
 		},
 
@@ -49,23 +49,54 @@ $(document).ready(function(){
             var myLatlng = new google.maps.LatLng(lat, lon);
             var marker = new google.maps.Marker({title: title, position: myLatlng, map: LoveMusic.map});
         },
+        
+		/* 
+		 * 	getLocationByZip(): try to localize the user with a zip code
+		 */
+        getLocationByZip: function(zipCode, located){
+            var geocoder = new google.maps.Geocoder();
+            geocoder.geocode(
+                {address: zipCode},
+                function(results, status)
+                {
+                    if (status == google.maps.GeocoderStatus.OK)
+                    {
+                        LoveMusic.latitude = results[0].geometry.location.lat();
+                        LoveMusic.longitude = results[0].geometry.location.lng();
+                        located();
+                    }
+                    else
+                    {
+                        // send this back to display error (e.g. zip does not exist or something like this...)
+                        console.log('Geocode was not successful for the following reason: ' + status);
+                    }
+                },
+                function(errorCode)
+                {
+                        // send this back to display error (e.g. zip does not exist or something like this...)
+                    console.log('Geocode was not successful for the following reason: error code' + errorCode);
+                }
+            );
+        },
 
 		/* 
-		 * 	getLocation(): try to use HTML5 geolocation to localize the user
+		 * 	getLocationByAPI(): try to use HTML5 geolocation to localize the user
 		 */
-		getLocation: function(located)
+		getLocationByAPI: function(located)
 		{
 			if(navigator.geolocation)
 			{
-				navigator.geolocation.getCurrentPosition(function(position){
-					LoveMusic.latitude = position.coords.latitude;
-					LoveMusic.longitude = position.coords.longitude;
-	                located();
-				});
+				navigator.geolocation.getCurrentPosition(
+                    function(position)
+                    {
+                        LoveMusic.latitude = position.coords.latitude;
+                        LoveMusic.longitude = position.coords.longitude;
+                        located();
+                    });
 
 				if(LoveMusic.latitude == 0 || LoveMusic.longitude == 0)
 				{
-					LoveMusic.zipBox.show();
+					//LoveMusic.zipBox.show();
 					return false;
 				}
 			}
