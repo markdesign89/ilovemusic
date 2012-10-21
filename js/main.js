@@ -1,99 +1,108 @@
+$(document).ready(function(){
+
+	LoveMusic = {
+		eventBriteKey: 'OF6TMFZJBW6POGG37K',
+		eventBriteUser: '',
+		latitude: 0,
+		longitude: 0,
+		zipBox: $('#zipbox'),
+		zipcode: $('#zipcode'),
+		zip: 0,
+	    map: null,
+	    mapBox: document.getElementById("map"),
 
 
-
-LoveMusic = {
-
-	eventBriteKey: 'OF6TMFZJBW6POGG37K',
-	eventBriteUser: '',
-	latitude: 40.714224,
-	longitude: -73.961452,
-	zip: 0,
-    map: null,
-    mapBox: document.getElementById("map"),
-
-
-	init: function()
-	{
-		LoveMusic.getLocation(LoveMusic.initMap);
-		LoveMusic.initEventbrite();
-	},
-
-	initMap: function()
-	{
-		var mapOptions = {
-        	zoom: 8,
-        	center: new google.maps.LatLng(LoveMusic.latitude, LoveMusic.longitude),
-        	mapTypeId: google.maps.MapTypeId.ROADMAP
-    	};
-
-        LoveMusic.map = new google.maps.Map(LoveMusic.mapBox, mapOptions);
-	},
-
-	setPoint: function()
-	{
-
-	},
-
-	/* 
-	 * 	getLocation(): try to use HTML5 geolocation to localize the user
-	 */
-	getLocation: function(located)
-	{
-		if(navigator.geolocation)
+		init: function()
 		{
-			navigator.geolocation.getCurrentPosition(function(position){
-				LoveMusic.latitude = position.coords.latitude;
-				LoveMusic.longitude = position.coords.longitude;
-                located();
+			LoveMusic.getLocation(LoveMusic.initMap);
+			LoveMusic.initEventbrite();
+
+			LoveMusic.zipBox.children('a').click(function(){
+				LoveMusic.zip = LoveMusic.zipcode.val();
+				LoveMusic.zipBox.hide();
 			});
 
-			if(LoveMusic.latitude == 0 || LoveMusic.longitude == 0)
+
+		},
+
+		initMap: function()
+		{
+			var mapOptions = {
+	        	zoom: 8,
+	        	center: new google.maps.LatLng(LoveMusic.latitude, LoveMusic.longitude),
+	        	mapTypeId: google.maps.MapTypeId.ROADMAP
+	    	};
+
+	        LoveMusic.map = new google.maps.Map(LoveMusic.mapBox, mapOptions);
+		},
+
+		setPoint: function()
+		{
+
+		},
+
+		/* 
+		 * 	getLocation(): try to use HTML5 geolocation to localize the user
+		 */
+		getLocation: function(located)
+		{
+			if(navigator.geolocation)
 			{
+				navigator.geolocation.getCurrentPosition(function(position){
+					LoveMusic.latitude = position.coords.latitude;
+					LoveMusic.longitude = position.coords.longitude;
+	                located();
+				});
+
+				if(LoveMusic.latitude == 0 || LoveMusic.longitude == 0)
+				{
+					LoveMusic.zipBox.show();
+					return false;
+				}
+			}
+			else
+			{
+				LoveMusic.zipBox.show();
 				return false;
 			}
-		}
-		else
+
+			return true;
+		},
+
+		initEventbrite: function()
 		{
-			return false;
-		}
+			Eventbrite({'app_key': LoveMusic.eventBriteKey, 'user_key': LoveMusic.eventBriteUser}, function(eb_client){
+				var params = {'latitude': LoveMusic.latitude, 'longitude': LoveMusic.longitude, 'date': 'Today', 'max': '100'};
 
-		return true;
-	},
-
-	initEventbrite: function()
-	{
-		Eventbrite({'app_key': LoveMusic.eventBriteKey, 'user_key': LoveMusic.eventBriteUser}, function(eb_client){
-			var params = {'latitude': LoveMusic.latitude, 'longitude': LoveMusic.longitude, 'date': 'Today', 'max': '100'};
-
-			eb_client.event_search( params, function( response ){
-    			console.log(response);
-    			
+				eb_client.event_search( params, function( response ){
+	    			console.log(response);
+				});
 			});
-		});
-	},
+		},
 
-	getDate: function()
-	{
-		var today = new Date();
-		var dd = today.getDate();
-		var mm = today.getMonth();
-		var yyyy = today.getFullYear();
+		getDate: function()
+		{
+			var today = new Date();
+			var dd = today.getDate();
+			var mm = today.getMonth();
+			var yyyy = today.getFullYear();
 
-		if(dd < 10){
-			dd = '0' + dd;
-		} 
+			if(dd < 10){
+				dd = '0' + dd;
+			} 
 
-		if(mm < 10){
-			mm = '0' + mm;
-		} 
+			if(mm < 10){
+				mm = '0' + mm;
+			} 
 
-		today = yyyy + '-' + mm + '-' + dd;
+			today = yyyy + '-' + mm + '-' + dd;
 
-		console.log(today);
-		return today;
-	},
+			console.log(today);
+			return today;
+		},
 
-}
+	}
 
-LoveMusic.init();
+	LoveMusic.init();
 
+});
