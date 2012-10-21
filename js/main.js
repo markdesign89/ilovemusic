@@ -14,9 +14,8 @@ LoveMusic = {
 
 	init: function()
 	{
-		LoveMusic.getLocation();
+		LoveMusic.getLocation(LoveMusic.initMap);
 		LoveMusic.initEventbrite();
-        LoveMusic.initMap();
 	},
 
 	initMap: function()
@@ -38,17 +37,15 @@ LoveMusic = {
 	/* 
 	 * 	getLocation(): try to use HTML5 geolocation to localize the user
 	 */
-	getLocation: function()
+	getLocation: function(located)
 	{
 		if(navigator.geolocation)
 		{
 			navigator.geolocation.getCurrentPosition(function(position){
 				LoveMusic.latitude = position.coords.latitude;
 				LoveMusic.longitude = position.coords.longitude;
+                located();
 			});
-
-			console.log(LoveMusic.latitude);
-			console.log(LoveMusic.longitude);
 
 			if(LoveMusic.latitude == 0 || LoveMusic.longitude == 0)
 			{
