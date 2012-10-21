@@ -72,11 +72,11 @@ LoveMusic = {
 	initEventbrite: function()
 	{
 		Eventbrite({'app_key': LoveMusic.eventBriteKey, 'user_key': LoveMusic.eventBriteUser}, function(eb_client){
-			var params = {'city': 'San Francisco', 'region': 'CA'};
+			var params = {'city': 'San Francisco', 'region': 'CA', 'date': 'This Week', 'max': '100'};
 
 			eb_client.event_search( params, function( response ){
-    			console.log( response );
-    			$('#e').html(response);
+    			console.log(response);
+    			
 			});
 		});
 	},
