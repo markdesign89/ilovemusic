@@ -8,16 +8,23 @@ LoveMusic = {
 	latitude: 40.714224,
 	longitude: -73.961452,
 	zip: 0,
+    map: null,
+    mapOptions: {
+        zoom: 8,
+        center: new google.maps.LatLng(-34.397, 150.644),
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    },
 
 
 	init: function()
 	{
 		LoveMusic.initEventbrite();
+        LoveMusic.initMap();
 	},
 
 	initMap: function()
 	{
-
+        LoveMusic.map = new google.maps.Map(document.getElementById("e"), LoveMusic.mapOptions);
 	},
 
 	setPoint: function()
@@ -84,3 +91,4 @@ LoveMusic = {
 }
 
 LoveMusic.init();
+
