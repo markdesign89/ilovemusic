@@ -49,12 +49,15 @@ $(document).ready(function(){
 
         setPoint: function(marker)
         {
-            console.log(marker);
-            var lat = marker['venue'].latitude;
-            var lon = marker['venue'].longitude;
-            var title = marker['title'];
-            var myLatlng = new google.maps.LatLng(lat, lon);
-            var marker = new google.maps.Marker({title: title, position: myLatlng, map: LoveMusic.map});
+            try{
+                var lat = marker['venue'].latitude;
+                var lon = marker['venue'].longitude;
+                var title = marker['title'];
+                var myLatlng = new google.maps.LatLng(lat, lon);
+                var marker = new google.maps.Marker({title: title, position: myLatlng, map: LoveMusic.map});
+            }catch(ex){
+                console.log(ex);
+            }
         },
         
 		/* 
