@@ -61,7 +61,7 @@ $(document).ready(function(){
 
 				if(LoveMusic.latitude == 0 || LoveMusic.longitude == 0)
 				{
-					LoveMusic.zipBox.show();
+					//LoveMusic.zipBox.show();
 					return false;
 				}
 			}
@@ -76,11 +76,28 @@ $(document).ready(function(){
 
 		initEventbrite: function()
 		{
+			var markers = [];
+
 			Eventbrite({'app_key': LoveMusic.eventBriteKey, 'user_key': LoveMusic.eventBriteUser}, function(eb_client){
 				var params = {'latitude': LoveMusic.latitude, 'longitude': LoveMusic.longitude, 'date': 'Today', 'max': '100'};
 
 				eb_client.event_search( params, function( response ){
-	    			console.log(response);
+					console.log(response);
+	    			$.each(response.events, function(i, val){
+	    				if(i != 0){
+	    					var marker = new Array;
+
+	    					marker["category"] = val.event.category;
+	    					marker["start_date"] = val.event.start_date;
+	    					marker["end_date"] = val.event.end_date;
+	    					marker["title"] = val.event.title;
+	    					marker["url"] = val.event.url;
+	    					marker["venue"] = val.event.venue;
+
+	    					markers.push(marker);
+	    				}
+	    			});
+	    			LoveMusic.setMarkers(markers);
 				});
 			});
 		},
