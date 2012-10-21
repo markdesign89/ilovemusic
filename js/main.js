@@ -14,16 +14,20 @@ $(document).ready(function(){
 
 		init: function()
 		{
-			LoveMusic.getLocation(LoveMusic.initMap);
+			LoveMusic.initMap();
+			LoveMusic.getLocation(LoveMusic.resetMapCenterPosition);
 			LoveMusic.initEventbrite();
 
 			LoveMusic.zipBox.children('a').click(function(){
 				LoveMusic.zip = LoveMusic.zipcode.val();
 				LoveMusic.zipBox.hide();
 			});
-
-
 		},
+
+	    resetMapCenterPosition: function ()
+	    {
+	        LoveMusic.map.setCenter(new google.maps.LatLng(LoveMusic.latitude, LoveMusic.longitude));
+	    },
 
 		initMap: function()
 		{
@@ -33,8 +37,9 @@ $(document).ready(function(){
 	        	mapTypeId: google.maps.MapTypeId.ROADMAP
 	    	};
 
+
 	        LoveMusic.map = new google.maps.Map(LoveMusic.mapBox, mapOptions);
-		},
+		},	
 
 		setPoint: function()
 		{
