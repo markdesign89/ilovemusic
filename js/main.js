@@ -66,30 +66,37 @@ LoveMusic = {
 		return true;
 	},
 
-	getZip: function()
-	{
-		if(LoveMusic.latitude != 0 && LoveMusic.longitude != 0)
-		{
-			$.getJSON('http://maps.googleapis.com/maps/api/geocode/json?latlng=' + LoveMusic.latitude + ',' + LoveMusic.longitude, function(data){
-				console.log(data);
-			});
-		}
-		else 
-		{
-			return false;
-		}	
-	},
-
 	initEventbrite: function()
 	{
 		Eventbrite({'app_key': LoveMusic.eventBriteKey, 'user_key': LoveMusic.eventBriteUser}, function(eb_client){
-			var params = {'city': 'San Francisco', 'region': 'CA', 'date': 'This Week', 'max': '100'};
+			var params = {'latitude': LoveMusic.latitude, 'longitude': LoveMusic.longitude, 'date': 'Today', 'max': '100'};
 
 			eb_client.event_search( params, function( response ){
     			console.log(response);
     			
 			});
 		});
+	},
+
+	getDate: function()
+	{
+		var today = new Date();
+		var dd = today.getDate();
+		var mm = today.getMonth();
+		var yyyy = today.getFullYear();
+
+		if(dd < 10){
+			dd = '0' + dd;
+		} 
+
+		if(mm < 10){
+			mm = '0' + mm;
+		} 
+
+		today = yyyy + '-' + mm + '-' + dd;
+
+		console.log(today);
+		return today;
 	},
 
 }
