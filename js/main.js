@@ -3,6 +3,7 @@ $(document).ready(function(){
 	Hackton = {
 		categories: ['conference', 'conventions', 'entertainment', 'fundraisers', 'meetings', 'other', 'performances', 'reunions', 'sales', 'seminars', 'social', 'sports', 'tradeshows', 'travel', 'religion', 'fairs', 'food', 'music', 'recreation'],
 		categorySelection: $('#category'),
+		country: '',
 		eventBriteKey: 'OF6TMFZJBW6POGG37K',
 		eventBriteUser: '',
 		latitude: 0,
@@ -77,6 +78,13 @@ $(document).ready(function(){
             try{
                 var lat = marker['venue'].latitude;
                 var lon = marker['venue'].longitude;
+                var address = marker['venue'].address;
+                var city = marker['venue'].city;
+                var country = marker['venue'].country;
+                var region = marker['venue'].region;
+                var postal_code = marker['venue'].postal_code;
+                var name = marker['venue'].name;
+
                 var title = marker['title'];
                 var category = marker['category'];
                 var start_date = marker['start_date'];
@@ -84,11 +92,17 @@ $(document).ready(function(){
                 var myLatlng = new google.maps.LatLng(lat, lon);
                 var marker = new google.maps.Marker({title: title, position: myLatlng, clickable: true, animation: google.maps.Animation.DROP});
                 marker.info = new google.maps.InfoWindow({
-                	content: 	'<h2>' + title + '</h2>' 
-                			+	'<p>' + start_date + '</p>'
-                			+	'<p>' + category + '</p>'
-                			+	'<a href="' + url + '">See the event</a>'
-                			+	''
+                	content: '<p class="date">' + start_date + '</p>'	
+                			+ '<h2 class="event-title">' + title + '</h2>' 
+                			+	'<p><b>Category: </b>' + category + '</p>'
+                			+	'<div class="address">'
+                			+	'<div class="name">' + name + "</div>"
+                			+	'<div class="address">' + address + '</div>'
+                			+	'<div><span class="city">' + city + ', </span>'
+                			+	'<span class="region">' + region + '</span></div>'
+                			+	'<div><span class="postal_code>' + postal_code + '</span></div>'
+                			+	'</div>'
+                			+	'<div><a href="http://' + url + '">See the event</a></div>'
                 });
 
                 Hackton.markers.push(marker);
@@ -132,9 +146,12 @@ $(document).ready(function(){
 		 * 	getLocationByZip(): try to localize the user with a zip code
 		 */
         getLocationByZip: function(located){
+        	Hackton.country = 'US';
+
+
             var geocoder = new google.maps.Geocoder();
             geocoder.geocode(
-                {address: Hackton.zip},
+                {address: Hackton.zip + ', United States'},
                 function(results, status)
                 {
                     if (status == google.maps.GeocoderStatus.OK)
@@ -162,6 +179,8 @@ $(document).ready(function(){
 		 */
 		getLocationByAPI: function(located)
 		{
+			Hackton.country = '';
+
 			if(navigator.geolocation)
 			{
 				navigator.geolocation.getCurrentPosition(
@@ -191,7 +210,7 @@ $(document).ready(function(){
 		{
 
 			Eventbrite({'app_key': Hackton.eventBriteKey, 'user_key': Hackton.eventBriteUser}, function(eb_client){
-				var params = {'latitude': Hackton.latitude, 'longitude': Hackton.longitude, 'category': category, 'within':'100', 'within_unit':'K','date': 'Today', 'max': '60'};
+				var params = {'latitude': Hackton.latitude, 'longitude': Hackton.longitude, 'category': category, 'within':'100', 'country': Hackton.country, 'within_unit':'K','date': 'Today', 'max': '10'};
 
 				eb_client.event_search( params, function( response ){
 					console.log(response);

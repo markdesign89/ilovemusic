@@ -90,6 +90,25 @@ a{ text-decoration: none; }
     z-index: 400;
 }
 
+p.date{
+    font-size: 14px;
+    font-style: italic;
+}
+
+h2.event-title{
+    font-size: 24px;
+    line-height: 30px;
+    margin-bottom: 0px;
+}
+
+.address{
+    margin: 10px 0;
+}
+
+.address .name{
+    font-weight: bold;
+}
+
 h2{
     font-size: 16px;
     line-height: 17px;
