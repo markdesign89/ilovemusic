@@ -8,24 +8,29 @@ LoveMusic = {
 	latitude: 40.714224,
 	longitude: -73.961452,
 	zip: 0,
+    map: null,
+    mapBox: document.getElementById("map"),
 
 
 	init: function()
 	{
+		LoveMusic.getLocation();
 		LoveMusic.initEventbrite();
+        LoveMusic.initMap();
 	},
 
 	initMap: function()
 	{
+		var mapOptions = {
+        	zoom: 8,
+        	center: new google.maps.LatLng(LoveMusic.latitude, LoveMusic.longitude),
+        	mapTypeId: google.maps.MapTypeId.ROADMAP
+    	};
 
+        LoveMusic.map = new google.maps.Map(LoveMusic.mapBox, mapOptions);
 	},
 
 	setPoint: function()
-	{
-
-	},
-
-	jamBase: function()
 	{
 
 	},
@@ -41,6 +46,9 @@ LoveMusic = {
 				LoveMusic.latitude = position.coords.latitude;
 				LoveMusic.longitude = position.coords.longitude;
 			});
+
+			console.log(LoveMusic.latitude);
+			console.log(LoveMusic.longitude);
 
 			if(LoveMusic.latitude == 0 || LoveMusic.longitude == 0)
 			{
@@ -84,3 +92,4 @@ LoveMusic = {
 }
 
 LoveMusic.init();
+
